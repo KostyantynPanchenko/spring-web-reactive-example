@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: spring-web-reactive
+  labels:
+    name: spring-web-reactive
+spec:
+  selector:
+    matchLabels:
+      name: spring-web-reactive
+  template:
+    metadata:
+      labels:
+        name: spring-web-reactive
+    spec:
+      containers:
+        - name: spring-web-reactive
+          image: example/spring-web-reactive:0.1.0
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 8080
