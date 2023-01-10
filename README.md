@@ -13,4 +13,4 @@ $ docker run --name my-postgres \
 ```
 * `./gradlew bootRun`
 
-See also `spring-web-reactive-web-client`
+See also [spring-web-reactive-web-client](https://github.com/KostyantynPanchenko/spring-web-reactive-web-client)
