@@ -2,6 +2,7 @@ package com.example.web.reactive.controller;
 
 import com.example.web.reactive.model.Person;
 import com.example.web.reactive.service.PersonService;
+import java.time.Duration;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -30,11 +31,14 @@ public class PersonController {
   private HandlerFunction<ServerResponse> getByIdHandler() {
     return (ServerRequest request) ->
       ServerResponse.ok()
+          .contentType(MediaType.APPLICATION_JSON)
           .body(personService.getById(request.pathVariable("id")), Person.class);
   }
 
   private HandlerFunction<ServerResponse> getAllHandler() {
-    return request -> ServerResponse.ok().body(personService.getAll(), Person.class);
+    return request -> ServerResponse.ok()
+        .header("Content-Type", "application/stream+json")
+        .body(personService.getAll().delayElements(Duration.ofMillis(333)), Person.class);
   }
 
   private HandlerFunction<ServerResponse> updateOneHandler() {

@@ -16,6 +16,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.test.StepVerifier;
 
 @WebFluxTest
 @Import(PersonController.class)
@@ -52,20 +53,19 @@ class PersonControllerTest {
   void testGetAll() {
     Person pip = new Person(33L, "Scottie", "Pippen");
     given(personService.getAll()).willReturn(Flux.just(jordan, pip));
-    webTestClient.get()
+    Flux<Person> responseBody = webTestClient.get()
         .uri("/person")
         .accept(MediaType.APPLICATION_JSON).exchange()
         .expectStatus()
-          .isOk()
+        .isOk()
         .expectHeader()
-          .contentType(MediaType.APPLICATION_JSON)
-        .expectBody()
-          .json("""
-          [
-            {\"id\":23, \"firstName\":\"Michael\", \"lastName\": \"Jordan\"},
-            {\"id\":33, \"firstName\":\"Scottie\", \"lastName\": \"Pippen\"}
-          ]
-          """);
+        .contentType("application/stream+json")
+        .returnResult(Person.class)
+        .getResponseBody();
 
+    StepVerifier.create(responseBody)
+        .expectNext(new Person(23L, "Michael", "Jordan"))
+        .expectNext(new Person(33L, "Scottie", "Pippen"))
+        .verifyComplete();
   }
 }
